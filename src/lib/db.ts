@@ -19,8 +19,9 @@ async function connect(): Promise<Db> {
 
   if (url) {
     const { default: postgres } = await import("postgres");
-    // prepare:false → Supabase'in transaction pooler'ı ile uyumlu.
-    const sql = postgres(url, { prepare: false, max: 5, onnotice: () => {} });
+    // prepare:false → Supabase'in transaction pooler'ı ile uyumlu. Uzak sunucuya bağlantı şifreli (SSL).
+    const local = /@(localhost|127\.0\.0\.1)[:/]/.test(url);
+    const sql = postgres(url, { prepare: false, max: 5, ssl: local ? false : "require", onnotice: () => {} });
     await sql.unsafe(SCHEMA);
     const wrap = (s: Sql | TransactionSql): Queryable => ({
       query: async <T extends Row>(text: string, params: unknown[] = []) =>
