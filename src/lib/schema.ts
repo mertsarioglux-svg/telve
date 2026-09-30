@@ -52,4 +52,13 @@ create table if not exists password_resets (
   expires_at timestamptz not null,
   used_at    timestamptz
 );
+
+-- Supabase public şemadaki tabloları anahtarla herkese açık bir API'den sunar.
+-- RLS açık ve hiç policy yok → o API'den hiçbir satır okunamaz/yazılamaz.
+-- Uygulama tabloların sahibi olan rol ile bağlandığı için RLS'ten etkilenmez.
+alter table users           enable row level security;
+alter table sessions        enable row level security;
+alter table qr_codes        enable row level security;
+alter table transactions    enable row level security;
+alter table password_resets enable row level security;
 `;
